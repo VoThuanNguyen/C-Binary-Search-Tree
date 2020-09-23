@@ -1,0 +1,216 @@
+using System;
+
+namespace Project_AVL
+{
+    public class Node
+    {
+        public int data;
+        public Node left;
+        public Node right;
+        public Node(int i)
+        {
+            left = null;
+            right = null;
+            data = i;
+        }
+        public void DisplayNode()
+        {
+            Console.WriteLine(data + " ");  
+        }
+        
+    }   
+    public class BinarySearchTree
+    {
+        public Node root;
+        public BinarySearchTree()
+        {
+            root = null;
+        }
+        public void Insert(int i)
+        {
+            Node newnode = new Node(i);
+            if (root == null)
+            {
+                root = newnode;
+            }
+            else
+            {
+                Node current = root;
+                Node parent;
+                while (true)
+                {
+                    parent = current;
+                    if (i < current.data)
+                    {
+                        current = current.left;
+                        if (current ==null)
+                        {
+                            parent.left = newnode;
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        current = current.right;
+                        if (current == null)
+                        {
+                            parent.right = newnode;
+                            break;
+                        }
+                    }
+                }
+
+            }
+        }
+        public void Traverse(Node theRoot)
+        {
+            if (theRoot != null)
+            {
+                Traverse(theRoot.left);
+                theRoot.DisplayNode();
+                Traverse(theRoot.right);
+            }
+        }
+        public void ReverseTraverse(Node theRoot)
+        {
+            if(theRoot!=null)
+            {
+                ReverseTraverse(theRoot.right);
+                theRoot.DisplayNode();
+                ReverseTraverse(theRoot.left);
+            }    
+        }
+        public void TopToBot(Node theRoot)
+        {
+            if (theRoot!=null)
+            {
+                theRoot.DisplayNode();
+                TopToBot(theRoot.left);
+                TopToBot(theRoot.right);
+            }
+        }
+        public int Min()
+        {
+            Node current = root;
+            while (current.left != null)
+                current = current.left;
+            return current.data;
+        }
+        public int Max()
+        {
+            Node current = root;
+            while (current.right!=null)
+            {
+                current = current.right;
+                
+            }
+            return current.data;
+        }
+        public bool Find(int i)
+        {
+            Node current = root;
+            while (i!=current.data)
+            {
+                if (i > current.data)
+                    current = current.right;
+                else
+                    current = current.left;
+                if (current== null)
+                    break;
+            }
+            if (current == null)
+                return false;
+            else
+                return true;
+        }
+        public void Remove(int i)
+        {
+            if (Find(i) == false)
+                Console.WriteLine("There is no {0} here", i);
+            else
+            {
+                Node parent=root; 
+                Node current = root;
+                while (current.data!=i)
+                {
+                    parent = current;
+                    if (current.data > i)
+                        current = current.left;
+                    if (current.data<i)
+                        current = current.right;
+                }
+                bool isLeftchild;
+                if (parent.data > current.data)
+                    isLeftchild = true;
+                else
+                    isLeftchild = false;        //check if current is left or right to parent
+
+                if ((current.left == null) && (current.right == null))
+                {
+                    if (current.data < parent.data)
+                        parent.left = null;
+                    else
+                        parent.right = null;                    //delete a leaf: complete
+                }
+                else if (current.left == null)
+                {
+                    if (current.data < parent.data)
+                        parent.left = current.right;
+                    if (current.data > parent.data)
+                        parent.right = current.right;
+                }
+                else if (current.right == null)
+                {
+                    if (current.data > parent.data)
+                        parent.right = current.left;
+                    if (current.data < parent.data)
+                        parent.left = current.right;        //delete a node with a left or right child: complete
+                }
+                else
+                {
+                    if (isLeftchild == true)
+                        parent.left = GetSuccessor(current);
+                    else
+                        parent.right = GetSuccessor(current);
+                }
+
+            }
+        }
+        public Node GetSuccessor(Node current)
+        {
+
+            Node parent = current;
+            Node successor = current;
+            Node leftbranch = current.left;
+            Node rightbranch = current.right;
+            while (current!=null)
+            {
+                parent = successor;
+                successor = current;
+                current = current.left;
+            }
+            parent.left = null;
+            successor.left = leftbranch;
+            successor.right = rightbranch;
+            return successor;
+        }                       // Only need to run the final case of the current node having two branches. It is where we use the very left node of the left sub-tree
+    }
+    class Driver
+    {
+        static void Main()
+        {
+            BinarySearchTree bst = new BinarySearchTree();
+            bst.Insert(45);
+            bst.Insert(52);
+            bst.Insert(49);
+            bst.Insert(54);
+            bst.Insert(46);
+            bst.Insert(50);
+            bst.Insert(53);
+            bst.Insert(55);
+            bst.Remove(52);
+            bst.Traverse(bst.root);
+
+        }
+    }
+}
